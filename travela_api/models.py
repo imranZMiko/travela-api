@@ -14,7 +14,7 @@ class Trip(models.Model):
     sharedUsers = models.ManyToManyField(User, blank=True)
 
 class ItineraryEntry(models.Model):
-    trip = models.OneToOneField(Trip, related_name='itinerary_entries', on_delete=models.CASCADE)
+    trip = models.ForeignKey(Trip, related_name='itinerary_entries', on_delete=models.CASCADE)
     dateTime = models.DateTimeField()
     description = models.CharField(max_length=500)
     location = models.CharField(max_length=80)

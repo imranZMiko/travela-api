@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 
-@api_view(['GET', 'POST'])
+@api_view(['POST'])
 def users_list(request):
     if request.method == 'GET':
         users = User.objects.all()

@@ -28,7 +28,7 @@ urlpatterns = [
     path('users/<str:userID>/', views.user_details),
     path('users/<str:userID>/trips/', views.user_trips),
     path('users/<str:userID>/trips/<int:id>/', views.trip_details),
-    path('users/<str:userID>/trips/<int:tripID>/itineraryEntry/', views.itinerary_details),
+    path('users/<str:userID>/trips/<int:tripID>/itineraryEntry/', views.itinerary_list),
     path('users/<str:userID>/trips/<int:tripID>/itineraryEntry/<int:id>/', views.itinerary_details),
 ]
 if settings.DEBUG:

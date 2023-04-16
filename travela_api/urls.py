@@ -25,8 +25,11 @@ from travela_api import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', views.users_list),
-    path('users/<str:userID>', views.user_details),
-    path('trips/', views.trips_list),
+    path('users/<str:userID>/', views.user_details),
+    path('users/<str:userID>/trips/', views.user_trips),
+    path('users/<str:userID>/trips/<int:id>/', views.trip_details),
+    path('users/<str:userID>/trips/<int:tripID>/itineraryEntry/', views.itinerary_details),
+    path('users/<str:userID>/trips/<int:tripID>/itineraryEntry/<int:id>/', views.itinerary_details),
 ]
 if settings.DEBUG:
         urlpatterns += static(settings.MEDIA_URL,

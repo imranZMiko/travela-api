@@ -25,6 +25,7 @@ from travela_api import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', views.users_list),
+    path('users/<str:userID>', views.user_details),
     path('trips/', views.trips_list),
 ]
 if settings.DEBUG:

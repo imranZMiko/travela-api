@@ -11,7 +11,7 @@ class Trip(models.Model):
     tripImage = models.ImageField(upload_to='tripImages/')
     startDate = models.DateField()
     endDate = models.DateField()
-    sharedUsers = models.ManyToManyField(User)
+    sharedUsers = models.ManyToManyField(User, blank=True)
 
 class ItineraryEntry(models.Model):
     trip = models.ForeignKey(Trip, related_name='itinerary_entries', on_delete=models.CASCADE)

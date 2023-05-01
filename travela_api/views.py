@@ -41,7 +41,6 @@ def user_details(request, userID):
         user.delete()
         return Response(status = status.HTTP_204_NO_CONTENT)
 
-
 @api_view(['GET', 'POST'])
 def user_trips(request, userID):
     try:
@@ -61,7 +60,7 @@ def user_trips(request, userID):
         
 
 @api_view(['GET', 'PUT', 'DELETE'])
-def trip_details(request, userID, id):
+def trip_details(request, id):
     try:
         trip = Trip.objects.get(pk = id)
     except Trip.DoesNotExist:

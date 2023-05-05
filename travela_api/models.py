@@ -4,8 +4,6 @@ class User(models.Model):
     userEmail = models.CharField(primary_key=True, max_length=128)
     userName = models.CharField(max_length=50)
     userImage = models.ImageField(upload_to='userImages/', blank = True, null = True)
-    pendingRequests = models.ManyToManyField('Trip', related_name='pending_requests', blank=True)
-    acceptedRequests = models.ManyToManyField('Trip', related_name='accepted_requests', blank=True)
 
 class Trip(models.Model):
     owner = models.ForeignKey(User, related_name='trips', on_delete=models.CASCADE)

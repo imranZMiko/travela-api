@@ -16,4 +16,4 @@ class TripSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['userEmail', 'userName', 'userImage', 'pendingRequests', 'acceptedRequests']
+        fields = ['userEmail', 'userName', 'userImage']

@@ -27,6 +27,7 @@ urlpatterns = [
     path('users/', views.users_list),
     path('users/<str:userID>/', views.user_details),
     path('users/<str:userID>/trips/', views.user_trips),
+    path('users/<str:userID>/pendingTrips/', views.user_pending_trips),
     path('trips/<int:id>/', views.trip_details),
     path('users/<str:userID>/trips/<int:tripID>/itineraryEntry/', views.itinerary_list),
     path('users/<str:userID>/trips/<int:tripID>/itineraryEntry/<int:id>/', views.itinerary_details),

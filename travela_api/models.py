@@ -18,4 +18,5 @@ class ItineraryEntry(models.Model):
     trip = models.ForeignKey('Trip', related_name='itinerary_entries', on_delete=models.CASCADE)
     dateTime = models.DateTimeField()
     description = models.CharField(max_length=500)
-    location = models.CharField(max_length=80)
+    location_latitude = models.DecimalField(max_digits=19, decimal_places=10)
+    location_longitude = models.DecimalField(max_digits=19, decimal_places=10)

@@ -4,7 +4,7 @@ from .models import *
 class ItineraryEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = ItineraryEntry
-        fields = ['id', 'trip', 'dateTime', 'description', 'location']
+        fields = ['id', 'trip', 'dateTime', 'description', 'location_latitude', 'location_longitude']
 
 class TripSerializer(serializers.ModelSerializer):
     itinerary_entries = ItineraryEntrySerializer(many=True, read_only=True)

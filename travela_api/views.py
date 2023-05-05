@@ -72,7 +72,20 @@ def user_pending_trips(request, userID):
 @api_view(['GET'])
 def user_personal_trips(request, userID):
     try:
-        trips = Trip.objects.filter(owner = userID)
+        trips = Trip.objects.filter(owner = userID).filter(sharedUsers__isnull=True)
+    except Trip.DoesNotExist:
+        return Response(status = status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET':
+        serializer = TripSerializer(trips, many = True)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+def user_group_trips(request, userID):
+    try:
+        tripsA = Trip.objects.filter(owner = userID).filter(sharedUsers__isnull=False)
+        tripsB = Trip.objects.filter(sharedUsers__userEmail__contains = userID)
+        trips = tripsA.union(tripsB)
     except Trip.DoesNotExist:
         return Response(status = status.HTTP_404_NOT_FOUND)
     
@@ -104,13 +117,12 @@ def trip_details(request, id):
         return Response(status = status.HTTP_204_NO_CONTENT)
     
 @api_view(['GET', 'POST'])
-def itinerary_list(request, userID, tripID):
-    try:
-        itinerary = ItineraryEntry.objects.get(trip = tripID)
-    except ItineraryEntry.DoesNotExist:
-        return Response(status = status.HTTP_404_NOT_FOUND)
-    
+def itinerary_list(request, tripID):  
     if request.method == 'GET':
+        try:
+            itinerary = ItineraryEntry.objects.get(trip = tripID)
+        except ItineraryEntry.DoesNotExist:
+            return Response(status = status.HTTP_404_NOT_FOUND)
         serializer = ItineraryEntrySerializer(itinerary)
         return Response(serializer.data)
     
@@ -121,7 +133,7 @@ def itinerary_list(request, userID, tripID):
             return Response(serializer.data, status = status.HTTP_201_CREATED)
 
 @api_view(['GET', 'PUT', 'DELETE'])
-def itinerary_details(request, userID, tripID, id):
+def itinerary_details(request, tripID, id):
     try:
         itinerary = ItineraryEntry.objects.get(pk = id)
     except ItineraryEntry.DoesNotExist:

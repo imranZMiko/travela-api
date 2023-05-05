@@ -57,6 +57,28 @@ def user_trips(request, userID):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status = status.HTTP_201_CREATED)
+
+@api_view(['GET'])
+def user_pending_trips(request, userID):
+    try:
+        trips = Trip.objects.filter(pendingUsers__userEmail__contains = userID)
+    except Trip.DoesNotExist:
+        return Response(status = status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET':
+        serializer = TripSerializer(trips, many = True)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+def user_personal_trips(request, userID):
+    try:
+        trips = Trip.objects.filter(owner = userID)
+    except Trip.DoesNotExist:
+        return Response(status = status.HTTP_404_NOT_FOUND)
+    
+    if request.method == 'GET':
+        serializer = TripSerializer(trips, many = True)
+        return Response(serializer.data)
         
 
 @api_view(['GET', 'PUT', 'DELETE'])

@@ -120,10 +120,10 @@ def trip_details(request, id):
 def itinerary_list(request, tripID):  
     if request.method == 'GET':
         try:
-            itinerary = ItineraryEntry.objects.get(trip = tripID)
+            entries = ItineraryEntry.objects.filter(trip = tripID)
         except ItineraryEntry.DoesNotExist:
             return Response(status = status.HTTP_404_NOT_FOUND)
-        serializer = ItineraryEntrySerializer(itinerary)
+        serializer = ItineraryEntrySerializer(entries, many=True)
         return Response(serializer.data)
     
     elif request.method == 'POST':

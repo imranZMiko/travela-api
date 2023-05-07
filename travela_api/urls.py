@@ -33,6 +33,9 @@ urlpatterns = [
     path('trips/<int:id>/', views.trip_details),
     path('trips/<int:tripID>/itineraryEntry/', views.itinerary_list),
     path('trips/<int:tripID>/itineraryEntry/<int:id>/', views.itinerary_details),
+    path('destinations/search/<str:search_term>/', views.destination_search),
+    path('destinations/details/<str:search_term>/', views.destination_details),
+
 ]
 if settings.DEBUG:
         urlpatterns += static(settings.MEDIA_URL,

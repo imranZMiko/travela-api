@@ -4,6 +4,7 @@ from .models import *
 from .serializers import *
 from rest_framework.response import Response
 from rest_framework import status
+from .scraper import *
 
 
 @api_view(['GET', 'POST'])
@@ -153,3 +154,13 @@ def itinerary_details(request, tripID, id):
     elif request.method == 'DELETE':
         itinerary.delete()
         return Response(status = status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET'])
+def destination_search(request, search_term):
+    if request.method == 'GET':
+        return Response(getDestinations(search_term))
+
+@api_view(['GET'])
+def destination_details(request, search_term):
+    if request.method == 'GET':
+        return Response(getDestinationDetails(search_term))

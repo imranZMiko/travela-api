@@ -190,3 +190,38 @@ def home_hot_destination(request):
         serializer = DestinationSerializer(destinations, many=True)
         return Response(serializer.data)
 
+@api_view(['GET'])
+def home_destination(request):
+    try:
+        destinationSet = list(HomeDestination.objects.all())
+        destinations = destinationSet.objects.filter(destinationTag = 'Destination')
+    except HomeDestination.DoesNotExist:
+        return Response(status = status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = DestinationSerializer(destinations, many=True)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+def home_hotel(request):
+    try:
+        destinationSet = list(HomeDestination.objects.all())
+        destinations = destinationSet.objects.filter(destinationTag = 'Hotel')
+    except HomeDestination.DoesNotExist:
+        return Response(status = status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = DestinationSerializer(destinations, many=True)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+def home_restaurant(request):
+    try:
+        destinationSet = list(HomeDestination.objects.all())
+        destinations = destinationSet.objects.filter(destinationTag = 'Restaurant')
+    except HomeDestination.DoesNotExist:
+        return Response(status = status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = DestinationSerializer(destinations, many=True)
+        return Response(serializer.data)

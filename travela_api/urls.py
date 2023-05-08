@@ -37,6 +37,9 @@ urlpatterns = [
     path('destinations/details/<str:search_term>/', views.destination_details),
     path('destinations/banner/', views.home_banner),
     path('destinations/hotDestinations/', views.home_hot_destination),
+    path('destinations/homeDestinations/', views.home_destination),
+    path('destinations/homeHotels/', views.home_hotel),
+    path('destinations/homeRestaurants/', views.home_restaurant),
 ]
 if settings.DEBUG:
         urlpatterns += static(settings.MEDIA_URL,

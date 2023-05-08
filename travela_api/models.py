@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 class User(models.Model):
     userEmail = models.CharField(primary_key=True, max_length=128)
@@ -16,8 +17,8 @@ class Trip(models.Model):
 
 class ItineraryEntry(models.Model):
     trip = models.ForeignKey('Trip', related_name='itinerary_entries', on_delete=models.CASCADE)
-    dateTime = models.DateTimeField()
-    description = models.CharField(max_length=500)
+    dateTime = models.CharField(max_length=80)
+    description = models.CharField(max_length=800)
     location_latitude = models.DecimalField(max_digits=25, decimal_places=20)
     location_longitude = models.DecimalField(max_digits=25, decimal_places=20)
 

@@ -24,6 +24,6 @@ class ItineraryEntry(models.Model):
 class HomeDestination(models.Model):
     destinationName = models.CharField(max_length=50)
     destinationTag = models.CharField(max_length=50)
-    destinationImage = models.CharField(max_length=50)
+    destinationImage = models.CharField(max_length=200)
     destinationLocation = models.CharField(max_length=50)
     

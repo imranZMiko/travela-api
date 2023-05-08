@@ -165,9 +165,20 @@ def destination_details(request, search_term):
     if request.method == 'GET':
         return Response(getDestinationDetails(search_term))
     
-
 @api_view(['GET'])
-def destination_hot_destination(request):
+def home_banner(request):
+    try:
+        destinationSet = HomeDestination.objects.all()
+        destination = random.choice(destinationSet)
+    except HomeDestination.DoesNotExist:
+        return Response(status = status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = DestinationSerializer(destination) 
+        return Response(serializer.data)
+    
+@api_view(['GET'])
+def home_hot_destination(request):
     try:
         destinationSet = HomeDestination.objects.all()
         destinations = random.sample(destinationSet, 10)

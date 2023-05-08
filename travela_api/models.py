@@ -20,3 +20,10 @@ class ItineraryEntry(models.Model):
     description = models.CharField(max_length=500)
     location_latitude = models.DecimalField(max_digits=25, decimal_places=20)
     location_longitude = models.DecimalField(max_digits=25, decimal_places=20)
+
+class HomeDestination(models.Model):
+    destinationName = models.CharField(max_length=50)
+    destinationTag = models.CharField(max_length=50)
+    destinationImage = models.CharField(max_length=50)
+    destinationLocation = models.CharField(max_length=50)
+    

@@ -164,3 +164,17 @@ def destination_search(request, search_term):
 def destination_details(request, search_term):
     if request.method == 'GET':
         return Response(getDestinationDetails(search_term))
+    
+
+@api_view(['GET'])
+def destination_hot_destination(request):
+    try:
+        destinationSet = HomeDestination.objects.all()
+        destinations = random.sample(destinationSet, 10)
+    except HomeDestination.DoesNotExist:
+        return Response(status = status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = [DestinationSerializer(destination) for destination in destinations]
+        return Response(serializer.data)
+

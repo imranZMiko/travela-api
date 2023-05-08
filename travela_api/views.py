@@ -181,12 +181,12 @@ def home_banner(request):
 @api_view(['GET'])
 def home_hot_destination(request):
     try:
-        destinationSet = HomeDestination.objects.all()
+        destinationSet = list(HomeDestination.objects.all())
         destinations = random.sample(destinationSet, 10)
     except HomeDestination.DoesNotExist:
         return Response(status = status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = [DestinationSerializer(destination) for destination in destinations]
+        serializer = DestinationSerializer(destinations, many=True)
         return Response(serializer.data)
 

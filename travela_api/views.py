@@ -5,6 +5,7 @@ from .serializers import *
 from rest_framework.response import Response
 from rest_framework import status
 from .scraper import *
+import random
 
 
 @api_view(['GET', 'POST'])

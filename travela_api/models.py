@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 class User(models.Model):
     userEmail = models.CharField(primary_key=True, max_length=128)
@@ -20,6 +21,12 @@ class ItineraryEntry(models.Model):
     description = models.CharField(max_length=500)
     location_latitude = models.DecimalField(max_digits=25, decimal_places=20)
     location_longitude = models.DecimalField(max_digits=25, decimal_places=20)
+
+    def save(self, *args, **kwargs):
+        # Set the timezone for my_datetime_field to 'US/Pacific'
+        dateTime_dhaka = timezone.localtime(self.dateTime, timezone='US/Pacific')
+        self.dateTime = dateTime_dhaka
+        super().save(*args, **kwargs)
 
 class HomeDestination(models.Model):
     destinationName = models.CharField(max_length=50)

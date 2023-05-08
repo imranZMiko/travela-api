@@ -17,16 +17,10 @@ class Trip(models.Model):
 
 class ItineraryEntry(models.Model):
     trip = models.ForeignKey('Trip', related_name='itinerary_entries', on_delete=models.CASCADE)
-    dateTime = models.DateTimeField()
-    description = models.CharField(max_length=500)
+    dateTime = models.CharField(max_length=80)
+    description = models.CharField(max_length=800)
     location_latitude = models.DecimalField(max_digits=25, decimal_places=20)
     location_longitude = models.DecimalField(max_digits=25, decimal_places=20)
-
-    def save(self, *args, **kwargs):
-        # Set the timezone for my_datetime_field to 'US/Pacific'
-        dateTime_dhaka = timezone.localtime(self.dateTime, timezone='US/Pacific')
-        self.dateTime = dateTime_dhaka
-        super().save(*args, **kwargs)
 
 class HomeDestination(models.Model):
     destinationName = models.CharField(max_length=50)

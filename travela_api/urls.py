@@ -35,6 +35,7 @@ urlpatterns = [
     path('trips/<int:tripID>/itineraryEntry/<int:id>/', views.itinerary_details),
     path('destinations/search/<str:search_term>/', views.destination_search),
     path('destinations/details/<str:search_term>/', views.destination_details),
+    path('destinations/location/<str:search_term>/', views.destination_location),
     path('destinations/banner/', views.home_banner),
     path('destinations/hotDestinations/', views.home_hot_destination),
     path('destinations/homeDestinations/', views.home_destination),

@@ -5,6 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 from selenium.webdriver.firefox.options import Options
 import re
+import time
 
 def getDestinations(search_term):
     result = []
@@ -107,6 +108,52 @@ def getDestinationDetails(search_term):
     result = {"name":name, "address":address, "image":imageUrls, "tag":tag, "description":description}
 
     # # close the browser
+    driver.quit()
+
+    # print(result)
+    return result
+
+def getDestinationLocation(search_term):
+    # configure headless Firefox options
+    firefox_options = Options()
+    firefox_options.add_argument("--headless")
+
+    # create a Firefox webdriver instance with headless options
+    driver = webdriver.Firefox(options=firefox_options)
+
+    # navigate to the TripAdvisor homepage
+    driver.get(f"https://www.google.com/maps/")
+
+    # wait for the search results page to load
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "searchboxinput"))
+    )
+
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, "searchbox-searchbutton"))
+    )
+
+    driver.execute_script(f"return document.querySelector(\"input[id='searchboxinput']\").value=\"{search_term}\"")
+    # driver.execute_script("return document.querySelector(\"input[name='searchboxinput']\").value")
+    driver.execute_script("return document.querySelector(\"button[id='searchbox-searchbutton']\").click()")
+
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, "J8zHNe "))
+    )
+
+    time.sleep(2)
+
+    url = driver.current_url
+
+    matches = url.split('/')
+    result = [s for s in matches if s.startswith("@")]
+
+    strings = result[0].split(',')
+    strings[0] = strings[0].removeprefix('@')
+
+    result = {"latitude":strings[0], "longitude":strings[1]}
+
+    # close the browser
     driver.quit()
 
     # print(result)

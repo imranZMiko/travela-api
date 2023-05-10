@@ -167,6 +167,11 @@ def destination_search(request, search_term):
 def destination_details(request, search_term):
     if request.method == 'GET':
         return Response(getDestinationDetails(search_term))
+
+@api_view(['GET'])
+def destination_location(request, search_term):
+    if request.method == 'GET':
+        return Response(getDestinationLocation(search_term))
     
 @api_view(['GET'])
 def home_banner(request):

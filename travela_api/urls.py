@@ -38,10 +38,9 @@ urlpatterns = [
     path('destinations/location/<str:search_term>/', views.destination_location),
     path('destinations/banner/', views.home_banner),
     path('destinations/hotDestinations/', views.home_hot_destination),
-    path('destinations/homeDestinations/', views.home_destination),
-    path('destinations/homeHotels/', views.home_hotel),
-    path('destinations/homeRestaurants/', views.home_restaurant),
+    path('destinations/homeFilter/<str:tag_name>/', views.home_filter),
     path('destinations/homeLocationOfTheDay/', views.home_location_of_the_day),
+    path('destinations/homeLocationOfTheDayFiltered/<str:tag_name>/', views.home_location_of_the_day_filtered),
 ]
 if settings.DEBUG:
         urlpatterns += static(settings.MEDIA_URL,

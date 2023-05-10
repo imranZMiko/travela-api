@@ -198,31 +198,9 @@ def home_hot_destination(request):
         return Response(serializer.data)
 
 @api_view(['GET'])
-def home_destination(request):
+def home_filter(request, tag_name):
     try:
-        destinations = HomeDestination.objects.filter(destinationTag='Destination')
-    except HomeDestination.DoesNotExist:
-        return Response(status = status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = DestinationSerializer(destinations, many=True)
-        return Response(serializer.data)
-
-@api_view(['GET'])
-def home_hotel(request):
-    try:
-        destinations = HomeDestination.objects.filter(destinationTag='Hotel')
-    except HomeDestination.DoesNotExist:
-        return Response(status = status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = DestinationSerializer(destinations, many=True)
-        return Response(serializer.data)
-
-@api_view(['GET'])
-def home_restaurant(request):
-    try:
-        destinations = HomeDestination.objects.filter(destinationTag='Restaurant')
+        destinations = HomeDestination.objects.filter(destinationTag=tag_name)
     except HomeDestination.DoesNotExist:
         return Response(status = status.HTTP_404_NOT_FOUND)
 
@@ -238,6 +216,21 @@ def home_location_of_the_day(request):
         generator = random.Random(seed)
         new_location = generator.choice(locations)
         location_data = HomeDestination.objects.filter(destinationLocation=new_location)
+    except HomeDestination.DoesNotExist:
+        return Response(status = status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = DestinationSerializer(location_data, many=True)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+def home_location_of_the_day_filtered(request, tag_name):
+    try:
+        locations = HomeDestination.objects.values_list('destinationLocation', flat=True).distinct()
+        seed = int(date.today().strftime('%Y%m%d'))
+        generator = random.Random(seed)
+        new_location = generator.choice(locations)
+        location_data = HomeDestination.objects.filter(destinationLocation=new_location).filter(destinationTag=tag_name)
     except HomeDestination.DoesNotExist:
         return Response(status = status.HTTP_404_NOT_FOUND)
 

@@ -238,7 +238,6 @@ def home_location_of_the_day(request):
         generator = random.Random(seed)
         new_location = generator.choice(locations)
         location_data = HomeDestination.objects.filter(destinationLocation=new_location)
-        location_data.save()
     except HomeDestination.DoesNotExist:
         return Response(status = status.HTTP_404_NOT_FOUND)
 

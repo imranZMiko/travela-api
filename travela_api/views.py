@@ -193,8 +193,7 @@ def home_hot_destination(request):
 @api_view(['GET'])
 def home_destination(request):
     try:
-        destinationSet = list(HomeDestination.objects.all())
-        destinations = destinationSet.objects.filter(destinationTag = 'Destination')
+        destinations = HomeDestination.objects.filter(destinationTag='Destination')
     except HomeDestination.DoesNotExist:
         return Response(status = status.HTTP_404_NOT_FOUND)
 
@@ -205,8 +204,7 @@ def home_destination(request):
 @api_view(['GET'])
 def home_hotel(request):
     try:
-        destinationSet = list(HomeDestination.objects.all())
-        destinations = destinationSet.objects.filter(destinationTag = 'Hotel')
+        destinations = HomeDestination.objects.filter(destinationTag='Hotel')
     except HomeDestination.DoesNotExist:
         return Response(status = status.HTTP_404_NOT_FOUND)
 
@@ -217,8 +215,7 @@ def home_hotel(request):
 @api_view(['GET'])
 def home_restaurant(request):
     try:
-        destinationSet = list(HomeDestination.objects.all())
-        destinations = destinationSet.objects.filter(destinationTag = 'Restaurant')
+        destinations = HomeDestination.objects.filter(destinationTag='Restaurant')
     except HomeDestination.DoesNotExist:
         return Response(status = status.HTTP_404_NOT_FOUND)
 

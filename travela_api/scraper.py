@@ -138,10 +138,10 @@ def getDestinationLocation(search_term):
     driver.execute_script("return document.querySelector(\"button[id='searchbox-searchbutton']\").click()")
 
     WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CLASS_NAME, "J8zHNe "))
+        EC.presence_of_element_located((By.CLASS_NAME, "DUwDvf"))
     )
 
-    time.sleep(2)
+    time.sleep(1)
 
     url = driver.current_url
 

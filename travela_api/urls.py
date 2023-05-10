@@ -40,6 +40,7 @@ urlpatterns = [
     path('destinations/homeDestinations/', views.home_destination),
     path('destinations/homeHotels/', views.home_hotel),
     path('destinations/homeRestaurants/', views.home_restaurant),
+    path('destinations/homeLocationOfTheDay/', views.home_location_of_the_day),
 ]
 if settings.DEBUG:
         urlpatterns += static(settings.MEDIA_URL,

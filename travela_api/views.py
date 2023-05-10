@@ -5,7 +5,9 @@ from .serializers import *
 from rest_framework.response import Response
 from rest_framework import status
 from .scraper import *
+from datetime import date, timedelta
 import random
+
 
 
 @api_view(['GET', 'POST'])
@@ -221,4 +223,20 @@ def home_restaurant(request):
 
     if request.method == 'GET':
         serializer = DestinationSerializer(destinations, many=True)
+        return Response(serializer.data)
+    
+@api_view(['GET'])
+def home_location_of_the_day(request):
+    try:
+        locations = HomeDestination.objects.values_list('destinationLocation', flat=True).distinct()
+        seed = int(date.today().strftime('%Y%m%d'))
+        generator = random.Random(seed)
+        new_location = generator.choice(locations)
+        location_data = HomeDestination.objects.filter(destinationLocation=new_location)
+        location_data.save()
+    except HomeDestination.DoesNotExist:
+        return Response(status = status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = DestinationSerializer(location_data, many=True)
         return Response(serializer.data)

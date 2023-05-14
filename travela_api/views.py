@@ -169,9 +169,23 @@ def destination_details(request, search_term):
         return Response(getDestinationDetails(search_term))
 
 @api_view(['GET'])
+def destination_nearby(request):
+    if request.method == 'GET':
+        latitude = request.GET.get('latitude')
+        longitude = request.GET.get('longitude')
+        return Response(getNearbyPlaces(latitude, longitude))
+
+@api_view(['GET'])
 def destination_location(request, search_term):
     if request.method == 'GET':
         return Response(getDestinationLocation(search_term))
+
+@api_view(['GET'])
+def nearby_destinations(request):
+    if request.method == 'GET':
+        latitude = request.GET.get('latitude')
+        longitude = request.GET.get('longitude')
+        return Response(getNearbyDestinations(latitude, longitude))
     
 @api_view(['GET'])
 def home_banner(request):

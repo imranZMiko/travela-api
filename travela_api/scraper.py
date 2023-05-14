@@ -6,8 +6,35 @@ from bs4 import BeautifulSoup
 from selenium.webdriver.firefox.options import Options
 import re
 import time
+import requests
+from django.conf import settings
+import os
+
+import pickle
+
+def cache_data(key, data):
+    cache_file = os.path.join(settings.CACHE_DIR, f"{key}.cache")
+    with open(cache_file, "wb") as f:
+        pickle.dump(data, f)
+
+def get_cached_data(key):
+    cache_file = os.path.join(settings.CACHE_DIR, f"{key}.cache")
+    if os.path.isfile(cache_file):
+        with open(cache_file, "rb") as f:
+            return pickle.load(f)
+    else:
+        return None
+
 
 def getDestinations(search_term):
+    search_term = search_term.replace('%20', ' ')
+
+    key = f"gD-{search_term}"
+    key = key.lower()
+    data = get_cached_data(key)
+    if data is not None:
+        return data
+
     result = []
 
     # configure headless Firefox options
@@ -44,23 +71,36 @@ def getDestinations(search_term):
 
     # extract information from each hotel listing
     for hotel in hotel_listings:
-        name = hotel.find("div", class_="result-title").text.strip()
-        address = hotel.find("div", class_="address-text").text.strip()
-        image = hotel.find("div", class_="thumbnail").find("div", class_="inner").get("style")
-        image = re.findall(r'\((.*?)\)', image)
-        image = image[0]
-        tag = hotel.find("div", class_="thumbnail").find("span", class_="thumbnail-overlay-tag").text.strip()
-        if tag in ["Hotels", "Castles", "Religious Sites", "Ancient Ruins", "Historic Sites","Bodies of Water","Mountains","Forests","Parks","Activities","Architectural Buildings","Points of Interest & Landmarks","Scenic Walking Areas","Restaurants"]:
-            result.append({"name":name, "address":address, "image":[image], "tag":tag, "description":None})
+        try:
+            name = hotel.find("div", class_="result-title").text.strip()
+            address = hotel.find("div", class_="address-text").text.strip()
+            image = hotel.find("div", class_="thumbnail").find("div", class_="inner").get("style")
+            image = re.findall(r'\((.*?)\)', image)
+            image = image[0]
+            tag = hotel.find("div", class_="thumbnail").find("span", class_="thumbnail-overlay-tag").text.strip()
+            if tag in ["Hotels", "Castles", "Religious Sites", "Ancient Ruins", "Historic Sites","Bodies of Water","Mountains","Forests","Parks","Activities","Architectural Buildings","Points of Interest & Landmarks","Scenic Walking Areas","Restaurants","Department Stores","Flea & Street Markets"]:
+                result.append({"name":name, "address":address, "image":[image], "tag":tag, "description":None})
+        except:
+            continue
         # print(f"Name: {name}\nAddress: {address}\nImage: {image}")
 
     # # close the browser
     driver.quit()
 
+    cache_data(key, result)
+
     # print(result)
     return result
 
 def getDestinationDetails(search_term):
+    search_term = search_term.replace('%20', ' ')
+
+    key = f"gDD-{search_term}"
+    key = key.lower()
+    data = get_cached_data(key)
+    if data is not None:
+        return data
+
     # configure headless Firefox options
     firefox_options = Options()
     firefox_options.add_argument("--headless")
@@ -79,17 +119,29 @@ def getDestinationDetails(search_term):
 
     soup = BeautifulSoup(driver.page_source, "html.parser")
 
-    hotel = soup.find("div", class_="prw_search_search_result_poi")
-    name = hotel.find("div", class_="result-title").text.strip()
-    address = hotel.find("div", class_="address-text").text.strip()
-    tag = hotel.find("div", class_="thumbnail").find("span", class_="thumbnail-overlay-tag").text.strip()
+    hotels = soup.find_all("div", class_="prw_search_search_result_poi")
 
-    try:
-        returned = driver.execute_script("return document.querySelector('[data-widget-type=\"TOP_RESULT\"]').querySelector('.result-title').getAttribute(\"onclick\")")
-        returned = re.findall("[^']*\.html", returned)
-    except:
-        returned = driver.execute_script("return document.querySelector('.prw_search_search_result_poi').querySelector('.result-title').getAttribute(\"onclick\")")
-        returned = re.findall("[^']*\.html", returned)
+    for hotel in hotels:
+        name = hotel.find("div", class_="result-title").text.strip()
+        address = hotel.find("div", class_="address-text").text.strip()
+        tag = hotel.find("div", class_="thumbnail").find("span", class_="thumbnail-overlay-tag").text.strip()
+
+        if name == search_term:
+            break
+
+    script = f'''
+        const searchText = '{search_term}';
+        const elements = document.querySelectorAll('.prw_search_search_result_poi');
+
+        const filteredElements = Array.from(elements).filter(element => {{
+        return element.textContent.includes(searchText);
+        }});
+
+        return filteredElements[0].querySelector('.result-title').getAttribute(\"onclick\");
+    '''
+
+    returned = driver.execute_script(script)
+    returned = re.findall("[^']*\.html", returned)
     
     returned = returned[0]
 
@@ -115,7 +167,7 @@ def getDestinationDetails(search_term):
                 url = url.split()[0]
                 url = re.sub(r'w=\d+0', 'w=1800', url)
                 imageUrls.append(url)
-    elif tag in ["Castles", "Religious Sites", "Ancient Ruins", "Historic Sites","Bodies of Water","Mountains","Forests","Parks"] :
+    elif tag in ["Castles", "Religious Sites", "Ancient Ruins", "Historic Sites","Bodies of Water","Mountains","Forests","Parks","Department Stores"] :
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CLASS_NAME, "eIegw"))
         )
@@ -181,7 +233,7 @@ def getDestinationDetails(search_term):
                     url = re.sub(r'w=\d+0', 'w=1800', url)
                     imageUrls.append(url)
     #yNgTB
-    elif tag in ["Architectural Buildings","Points of Interest & Landmarks","Scenic Walking Areas"]:
+    elif tag in ["Architectural Buildings","Points of Interest & Landmarks","Scenic Walking Areas","Flea & Street Markets"]:
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CLASS_NAME, "EVnyE"))
         )
@@ -206,10 +258,19 @@ def getDestinationDetails(search_term):
     # close the browser
     driver.quit()
 
+    cache_data(key, result)
     # print(result)
     return result
 
 def getDestinationLocation(search_term):
+    search_term = search_term.replace('%20', ' ')
+
+    key = f"gDL-{search_term}"
+    key = key.lower()
+    data = get_cached_data(key)
+    if data is not None:
+        return data
+
     # configure headless Firefox options
     firefox_options = Options()
     firefox_options.add_argument("--headless")
@@ -238,20 +299,121 @@ def getDestinationLocation(search_term):
         EC.presence_of_element_located((By.CSS_SELECTOR, ".k7jAl.lJ3Kh.miFGmb"))
     )
 
-    time.sleep(1)
+    firstMatch = None
+    prevString = ""
+    iterations = 0
 
-    url = driver.current_url
+    while True:
+        try:
+            url = driver.current_url
 
-    matches = url.split('/')
-    result = [s for s in matches if s.startswith("@")]
+            matches = url.split('/')
+            result = [s for s in matches if s.startswith("@")]
 
-    strings = result[0].split(',')
-    strings[0] = strings[0].removeprefix('@')
+            strings = result[0].split(',')
+            strings[0] = strings[0].removeprefix('@')
 
-    result = {"latitude":strings[0], "longitude":strings[1]}
+            if firstMatch is None:
+                firstMatch = strings[0]
+
+            print(f"{strings[0]} {firstMatch} {prevString}")
+            if strings[0] != firstMatch and strings[0] == prevString:
+                break
+            prevString = strings[0]
+            if iterations == 34:
+                break
+            iterations = iterations + 1
+            time.sleep(0.5)
+        except:
+            continue
 
     # close the browser
     driver.quit()
+    result = {"latitude":strings[0], "longitude":strings[1]}
 
+    cache_data(key, result)
     # print(result)
     return result
+
+def getNearbyDestinations(latitude, longitude):
+    key = f"gND-{latitude}-{longitude}"
+    key = key.lower()
+    data = get_cached_data(key)
+    if data is not None:
+        return data
+    # get city name from lat and long
+    response = requests.get(f'https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat={latitude}&lon={longitude}&accept-language=en')
+
+    # Check the response status code
+    if response.status_code == 200:
+        # Request was successful
+        data = response.json()  # Parse the response as JSON
+        address = data["address"].get("city")
+        if address is None:
+            address = data["address"].get("town")
+        if address is None:
+            address = data["address"].get("village")
+        if address is None:
+            address = data["address"].get("state")
+        if address is None:
+            address = data["address"].get("province")
+        if address is None:
+            address = data["address"].get("region")
+        if address is None:
+            address = data["address"].get("country")
+        # print(address)
+    else:
+        print('Request failed with status code:', response.status_code)
+        return null
+    
+    destinations = getDestinations(f"destinations near {address}")
+    destinations = destinations[:15]
+    locations = []
+    
+    for destination in destinations:
+        try:
+            location = getDestinationLocation(destination['name'])
+            location['name'] = destination['name']
+            locations.append(location)
+        except:
+            continue
+
+    cache_data(key, locations)
+    return locations
+
+def getNearbyPlaces(latitude, longitude):
+    key = f"gNP-{latitude}-{longitude}"
+    key = key.lower()
+    data = get_cached_data(key)
+    if data is not None:
+        return data
+    # get city name from lat and long
+    response = requests.get(f'https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat={latitude}&lon={longitude}&accept-language=en')
+
+    # Check the response status code
+    if response.status_code == 200:
+        # Request was successful
+        data = response.json()  # Parse the response as JSON
+        address = data["address"].get("city")
+        if address is None:
+            address = data["address"].get("town")
+        if address is None:
+            address = data["address"].get("village")
+        if address is None:
+            address = data["address"].get("state")
+        if address is None:
+            address = data["address"].get("province")
+        if address is None:
+            address = data["address"].get("region")
+        if address is None:
+            address = data["address"].get("country")
+        # print(address)
+    else:
+        print('Request failed with status code:', response.status_code)
+        return null
+    
+    destinations = getDestinations(f"destinations near {address}")
+    destinations = destinations[:5]
+
+    cache_data(key, destinations)
+    return destinations

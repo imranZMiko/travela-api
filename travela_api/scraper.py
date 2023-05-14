@@ -331,7 +331,8 @@ def getDestinationLocation(search_term):
     driver.quit()
     result = {"latitude":strings[0], "longitude":strings[1]}
 
-    cache_data(key, result)
+    if strings[0] != "23.7600768":
+        cache_data(key, result)
     # print(result)
     return result
 

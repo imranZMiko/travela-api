@@ -121,7 +121,7 @@ def getDestinationDetails(search_term):
 
     # configure headless Firefox options
     firefox_options = Options()
-    # firefox_options.add_argument("--headless")
+    firefox_options.add_argument("--headless")
     firefox_options.set_preference("geo.enabled", False)
 
     # create a Firefox webdriver instance with headless options

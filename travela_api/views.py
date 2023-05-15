@@ -88,7 +88,7 @@ def user_personal_trips(request, userID):
 def user_group_trips(request, userID):
     try:
         tripsA = Trip.objects.filter(owner = userID).filter(sharedUsers__isnull=False)
-        tripsB = Trip.objects.filter(sharedUsers__userEmail__contains = userID)
+        tripsB = Trip.objects.filter(sharedUsers__userEmail__exact = userID)
         trips = tripsA.union(tripsB)
     except Trip.DoesNotExist:
         return Response(status = status.HTTP_404_NOT_FOUND)

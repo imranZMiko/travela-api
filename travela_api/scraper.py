@@ -12,6 +12,20 @@ import os
 
 import pickle
 
+def modify_string(input_string):
+    if "?" in input_string:
+        # Remove everything after "?" and append "w=1800&s=1"
+        modified_string = input_string.split("?")[0] + "?w=1800&s=1"
+    else:
+        # Append "?w=1800&s=1" at the end
+        modified_string = input_string + "?w=1800&s=1"
+
+    if "https://media-cdn." in modified_string:
+        # Replace "https://media-cdn." with "https://dynamic-media-cdn."
+        modified_string = modified_string.replace("https://media-cdn.", "https://dynamic-media-cdn.")
+
+    return modified_string
+
 def cache_data(key, data):
     cache_file = os.path.join(settings.CACHE_DIR, f"{key}.cache")
     with open(cache_file, "wb") as f:
@@ -77,6 +91,11 @@ def getDestinations(search_term):
             image = hotel.find("div", class_="thumbnail").find("div", class_="inner").get("style")
             image = re.findall(r'\((.*?)\)', image)
             image = image[0]
+            image = modify_string(image)
+            if "https://dynamic-media-cdn" not in image:
+                continue
+            if ".svg" in image:
+                continue
             tag = hotel.find("div", class_="thumbnail").find("span", class_="thumbnail-overlay-tag").text.strip()
             if tag in ["Hotels", "Castles", "Religious Sites", "Ancient Ruins", "Historic Sites","Bodies of Water","Mountains","Forests","Parks","Activities","Architectural Buildings","Points of Interest & Landmarks","Scenic Walking Areas","Restaurants","Department Stores","Flea & Street Markets"]:
                 result.append({"name":name, "address":address, "image":[image], "tag":tag, "description":None})
@@ -129,12 +148,14 @@ def getDestinationDetails(search_term):
         if name == search_term:
             break
 
+    # print(f"{name} {address} {tag}")
+
     script = f'''
         const searchText = '{search_term}';
         const elements = document.querySelectorAll('.prw_search_search_result_poi');
 
         const filteredElements = Array.from(elements).filter(element => {{
-        return element.textContent.includes(searchText);
+        return element.querySelector('.result-title').textContent.includes(searchText);
         }});
 
         return filteredElements[0].querySelector('.result-title').getAttribute(\"onclick\");
@@ -165,7 +186,11 @@ def getDestinationDetails(search_term):
             url = image.get("srcset")
             if url is not None:
                 url = url.split()[0]
-                url = re.sub(r'w=\d+0', 'w=1800', url)
+                url = modify_string(url)
+                if "https://dynamic-media-cdn" not in url:
+                    continue
+                if ".svg" in url:
+                    continue
                 imageUrls.append(url)
     elif tag in ["Castles", "Religious Sites", "Ancient Ruins", "Historic Sites","Bodies of Water","Mountains","Forests","Parks","Department Stores"] :
         WebDriverWait(driver, 10).until(
@@ -185,7 +210,11 @@ def getDestinationDetails(search_term):
             url = image.get("src")
             if url is not None:
                 url = url.split()[0]
-                url = re.sub(r'w=\d+0', 'w=1800', url)
+                url = modify_string(url)
+                if "https://dynamic-media-cdn" not in url:
+                    continue
+                if ".svg" in url:
+                    continue
                 imageUrls.append(url)
     elif tag == "Activities":
         WebDriverWait(driver, 10).until(
@@ -211,7 +240,11 @@ def getDestinationDetails(search_term):
             url = image.get("src")
             if url.startswith("https://media-cdn.tripadvisor.com") or url.startswith("https://dynamic-media-cdn.tripadvisor.com/media/"):
                 url = url.split()[0]
-                url = re.sub(r'w=\d+0', 'w=1800', url)
+                url = modify_string(url)
+                if "https://dynamic-media-cdn" not in url:
+                    continue
+                if ".svg" in url:
+                    continue
                 imageUrls.append(url)
     elif tag == "Restaurants":
         WebDriverWait(driver, 10).until(
@@ -230,7 +263,11 @@ def getDestinationDetails(search_term):
             if url is not None:
                 if url.startswith("https://media-cdn.tripadvisor.com") or url.startswith("https://dynamic-media-cdn.tripadvisor.com/media/"):
                     url = url.split()[0]
-                    url = re.sub(r'w=\d+0', 'w=1800', url)
+                    url = modify_string(url)
+                    if "https://dynamic-media-cdn" not in url:
+                        continue
+                    if ".svg" in url:
+                        continue
                     imageUrls.append(url)
     #yNgTB
     elif tag in ["Architectural Buildings","Points of Interest & Landmarks","Scenic Walking Areas","Flea & Street Markets"]:
@@ -250,7 +287,11 @@ def getDestinationDetails(search_term):
             if url is not None:
                 if url.startswith("https://media-cdn.tripadvisor.com") or url.startswith("https://dynamic-media-cdn.tripadvisor.com/media/"):
                     url = url.split()[0]
-                    url = re.sub(r'w=\d+0', 'w=1800', url)
+                    url = modify_string(url)
+                    if "https://dynamic-media-cdn" not in url:
+                        continue
+                    if ".svg" in url:
+                        continue
                     imageUrls.append(url)
 
     result = {"name":name, "address":address, "image":imageUrls, "tag":tag, "description":description}
@@ -331,7 +372,7 @@ def getDestinationLocation(search_term):
     driver.quit()
     result = {"latitude":strings[0], "longitude":strings[1]}
 
-    if strings[0] != "23.7600768":
+    if strings[0] != "23.7600768" and strings[0] != "23.7633536":
         cache_data(key, result)
     # print(result)
     return result

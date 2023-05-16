@@ -192,7 +192,7 @@ def getDestinationDetails(search_term):
                 if ".svg" in url:
                     continue
                 imageUrls.append(url)
-    elif tag in ["Castles", "Religious Sites", "Ancient Ruins", "Historic Sites","Bodies of Water","Mountains","Forests","Parks","Department Stores","Speciality & Gift Shops","Nature & Wildlife Areas","Islands", "Fountains"] :
+    elif tag in ["Castles", "Religious Sites", "Ancient Ruins", "Historic Sites","Bodies of Water","Mountains","Forests","Parks","Department Stores","Speciality & Gift Shops","Nature & Wildlife Areas","Islands", "Fountains","Bridges"] :
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CLASS_NAME, "eIegw"))
         )
@@ -264,7 +264,7 @@ def getDestinationDetails(search_term):
                         continue
                     imageUrls.append(url)
     #yNgTB
-    elif tag in ["Architectural Buildings","Points of Interest & Landmarks","Scenic Walking Areas","Flea & Street Markets","Beaches"]:
+    elif tag in ["Architectural Buildings","Points of Interest & Landmarks","Scenic Walking Areas","Flea & Street Markets","Beaches","Bridges"]:
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CLASS_NAME, "EVnyE"))
         )
